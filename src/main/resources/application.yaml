@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: dtsservice
+  datasource:
+    first:
+      url: jdbc:postgresql://localhost:5451/Company
+      username: root
+      password: root
+  jpa:
+    hibernate:
+      ddl-auto: create

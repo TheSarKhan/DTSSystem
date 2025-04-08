@@ -1,0 +1,20 @@
+services:
+  company_service:
+    container_name: companies
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: Company
+    ports:
+      - '5451:5432'
+    volumes:
+      - CompanyData:/var/lib/postgresql/data
+    networks:
+      - dts_network
+
+volumes:
+   CompanyData: {}
+networks:
+  dts_network:
+    driver: bridge
