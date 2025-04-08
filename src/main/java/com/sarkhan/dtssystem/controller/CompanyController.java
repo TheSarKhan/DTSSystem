@@ -23,6 +23,7 @@ public class CompanyController {
     @PostMapping("/add")
     public ResponseEntity<?> addCompany(@Valid @RequestBody CompanyRequest companyRequest) {
         companyService.addCompany(companyRequest);
+        System.out.println("Company added");
         return ResponseEntity.status(201).body(companyRequest);
     }
 
