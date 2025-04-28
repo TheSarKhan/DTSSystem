@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -21,10 +22,9 @@ public class CompanyController {
     private final CompanyService companyService;
 
     @PostMapping("/add")
-    public ResponseEntity<?> addCompany(@Valid @RequestBody CompanyRequest companyRequest) {
-        companyService.addCompany(companyRequest);
-        System.out.println("Company added");
-        return ResponseEntity.status(201).body(companyRequest);
+    public ResponseEntity<?> addCompany(@Valid @RequestPart("companyRequest") CompanyRequest companyRequest, MultipartFile registerCertificate, MultipartFile financialStatement,    MultipartFile digitalTransformationPlans) throws IOException {
+
+        return ResponseEntity.status(201).body(companyService.addCompany(companyRequest,digitalTransformationPlans,financialStatement,registerCertificate));
     }
 
     @GetMapping("/export-excel")

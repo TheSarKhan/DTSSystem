@@ -1,4 +1,8 @@
 spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
   application:
     name: dtsservice
   datasource:
@@ -8,4 +12,8 @@ spring:
       password: root
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
+cloudinary:
+  cloud_name: dgiumshwd
+  api_key: 384648233811973
+  api_secret: bsuE4WS9TVqHmE5EffLEG311rqw

@@ -3,12 +3,15 @@ package com.sarkhan.dtssystem.service.impl;
 import com.sarkhan.dtssystem.dto.request.CompanyRequest;
 import com.sarkhan.dtssystem.mapper.CompanyMapper;
 import com.sarkhan.dtssystem.model.company.Company;
+import com.sarkhan.dtssystem.model.company.data.CompanyFiles;
 import com.sarkhan.dtssystem.repository.company.CompanyRepository;
+import com.sarkhan.dtssystem.service.CloudinaryService;
 import com.sarkhan.dtssystem.service.CompanyService;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,10 +24,17 @@ public class CompanyServiceImpl implements CompanyService {
 
     private final CompanyRepository companyRepository;
     private final CompanyMapper companyMapper;
+    private final CloudinaryService cloudinaryService;
 
     @Override
-    public Company addCompany(CompanyRequest companyRequest) {
+    public Company addCompany(CompanyRequest companyRequest, MultipartFile digitalTransformationPlans, MultipartFile financialStatement, MultipartFile registerCertificate) throws IOException {
         Company company = companyMapper.toEntity(companyRequest);
+        company.setFinancialNeeding(companyRequest.getFinancialNeeding());
+        CompanyFiles companyFiles = new CompanyFiles();
+        companyFiles.setRegisterCertificate(cloudinaryService.uploadFile(registerCertificate, "Register Sertificates"));
+        companyFiles.setFinancialStatement(cloudinaryService.uploadFile(financialStatement, "Financial Statements"));
+        companyFiles.setDigitalTransformationPlans(cloudinaryService.uploadFile(digitalTransformationPlans, "Digital Transformation Plans"));
+        company.setCompanyFiles(companyFiles);
         return companyRepository.save(company);
     }
 
@@ -60,8 +70,15 @@ public class CompanyServiceImpl implements CompanyService {
 
         // 🔹 Başlıklar
         String[] columns = {
-                "ID", "Company Name", "Register Number", "Create Year","Address",
-                "City & Region", "Website", "Contact Name", "Contact Email", "Contact Phone"
+                "ID", "Company Name", "Register Number", "Create Year", "Address",
+                "City & Region", "Website", "Contact Name", "Contact Email", "Contact Phone",
+                "Worker Count", "Annual Turnover",
+                "Data Is Real", "Permit Contact",
+                "Digital Team/Lead", "Digital Path", "Digital Transformation Loyalty",
+                "Digital Level", "Digital Tools", "Key Challenges", "Company Purpose",
+                "Financial Need", "Needed Budget",
+                "Sector", "Products", "Export Activity", "Export Bazaar",
+                "Company Type", "Ownership Percentage", "Company Owners"
         };
 
         Row headerRow = sheet.createRow(0);
@@ -76,18 +93,52 @@ public class CompanyServiceImpl implements CompanyService {
         int rowNum = 1;
         for (Company company : companies) {
             Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(company.getId());
-            row.createCell(1).setCellValue(company.getCompanyName());
-            row.createCell(2).setCellValue(company.getCompanyRegisterNumber());
-            row.createCell(3).setCellValue(company.getCreateYear());
-            row.createCell(4).setCellValue(company.getAddress());
-            row.createCell(5).setCellValue(company.getCityAndRegion());
-            row.createCell(6).setCellValue(company.getWebsite());
-            row.createCell(7).setCellValue(company.getContactName());
-            row.createCell(8).setCellValue(company.getContactEmail());
-            row.createCell(9).setCellValue(company.getContactPhone());
 
-            for (int i = 0; i < 10; i++) {
+            int colNum = 0;
+            row.createCell(colNum++).setCellValue(company.getId());
+            row.createCell(colNum++).setCellValue(company.getCompanyData().getCompanyName());
+            row.createCell(colNum++).setCellValue(company.getCompanyData().getCompanyRegisterNumber());
+            row.createCell(colNum++).setCellValue(company.getCompanyData().getCreateYear());
+            row.createCell(colNum++).setCellValue(company.getCompanyData().getAddress());
+            row.createCell(colNum++).setCellValue(company.getCompanyData().getCityAndRegion());
+            row.createCell(colNum++).setCellValue(company.getCompanyData().getWebsite());
+            row.createCell(colNum++).setCellValue(company.getCompanyData().getContactName());
+            row.createCell(colNum++).setCellValue(company.getCompanyData().getContactEmail());
+            row.createCell(colNum++).setCellValue(company.getCompanyData().getContactPhone());
+
+            row.createCell(colNum++).setCellValue(company.getCompanySize().getWorkerCount());
+            row.createCell(colNum++).setCellValue(company.getCompanySize().getAnnualTurnover());
+
+            row.createCell(colNum++).setCellValue(company.getDeclarationConsent().isDataIsReal());
+            row.createCell(colNum++).setCellValue(company.getDeclarationConsent().isPermitContact());
+
+            row.createCell(colNum++).setCellValue(company.getDigitalLeadership().isDigitalTeamOrLead());
+            row.createCell(colNum++).setCellValue(company.getDigitalLeadership().isDigitalPath());
+            row.createCell(colNum++).setCellValue(company.getDigitalLeadership().isDigitalTransformationLoyality());
+
+            row.createCell(colNum++).setCellValue(company.getDigitalReadiness().getDigitalLevel());
+            row.createCell(colNum++).setCellValue(company.getDigitalReadiness().getDigitalTools());
+
+            // KeyChallenges -> Array olduğu için birleştiriyoruz
+            String keyChallenges = String.join(", ", company.getDigitalReadiness().getKeyChallenges());
+            row.createCell(colNum++).setCellValue(keyChallenges);
+
+            row.createCell(colNum++).setCellValue(company.getDigitalReadiness().getCompanyPurpose());
+
+            row.createCell(colNum++).setCellValue(company.getFinancialNeeding().isFinancialNeed());
+            row.createCell(colNum++).setCellValue(company.getFinancialNeeding().getNeededBudget());
+
+            row.createCell(colNum++).setCellValue(company.getIndustrialBusinessOperations().getSector());
+            row.createCell(colNum++).setCellValue(company.getIndustrialBusinessOperations().getProducts());
+            row.createCell(colNum++).setCellValue(company.getIndustrialBusinessOperations().isExportActivity());
+            row.createCell(colNum++).setCellValue(company.getIndustrialBusinessOperations().getExportBazaar());
+
+            row.createCell(colNum++).setCellValue(company.getOwnershipLegal().getCompanyType());
+            row.createCell(colNum++).setCellValue(company.getOwnershipLegal().getPercentage());
+            row.createCell(colNum++).setCellValue(company.getOwnershipLegal().getCompanyOwners());
+
+            // Her hücreye stilleri uygula
+            for (int i = 0; i < columns.length; i++) {
                 row.getCell(i).setCellStyle(dataCellStyle);
             }
         }
