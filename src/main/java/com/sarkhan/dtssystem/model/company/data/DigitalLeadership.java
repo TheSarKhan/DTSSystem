@@ -9,12 +9,13 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DigitalLeadership {
 
-    @NotNull(message = "Digital team or lead status cannot be null")
+    @NotNull(message = "Rəqəmsal komanda və ya rəhbər statusu seçilməlidir")
     boolean digitalTeamOrLead;
 
-    @NotNull(message = "Digital path status cannot be null")
+    @NotNull(message = "Rəqəmsal yol xəritəsi statusu seçilməlidir")
     boolean digitalPath;
 
-    @NotNull(message = "Digital transformation loyalty status cannot be null")
+    @NotNull(message = "Rəqəmsal transformasiya sadiqliyi seçilməlidir")
     boolean digitalTransformationLoyality;
+
 }

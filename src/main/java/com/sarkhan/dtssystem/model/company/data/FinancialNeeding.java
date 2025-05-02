@@ -11,9 +11,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FinancialNeeding {
 
-    @NotNull(message = "Financial need consent cannot be null")
+    @NotNull(message = "Maliyyə ehtiyacı razılığı seçilməlidir")
     boolean financialNeed;
 
-
-    String neededBudget;
+     String neededBudget;
 }

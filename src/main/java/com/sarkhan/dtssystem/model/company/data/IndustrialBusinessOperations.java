@@ -11,15 +11,16 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class IndustrialBusinessOperations {
 
-    @NotBlank(message = "Sector cannot be blank")
+    @NotBlank(message = "Sektor boş ola bilməz")
     String sector;
 
-    @Size(min = 1, max = 150, message = "Company type must be between 1 and 100 characters")
-    @NotBlank(message = "Products cannot be blank")
+    @Size(min = 1, max = 150, message = "Məhsullar 1 ilə 150 simvol arasında olmalıdır")
+    @NotBlank(message = "Məhsullar boş ola bilməz")
     String products;
 
-    @NotNull(message = "Export activity status cannot be null")
+    @NotNull(message = "İxrac fəaliyyəti seçilməlidir")
     boolean exportActivity;
 
-     String exportBazaar;
+
+    String exportBazaar;
 }

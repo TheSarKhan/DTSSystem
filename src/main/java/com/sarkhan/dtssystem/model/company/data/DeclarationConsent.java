@@ -8,10 +8,10 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DeclarationConsent {
-
-    @NotNull(message = "Data real consent cannot be null")
+    @NotNull(message = "Məlumatların doğruluğu razılığı seçilməlidir")
     boolean dataIsReal;
 
-    @NotNull(message = "Permit contact consent cannot be null")
+    @NotNull(message = "Əlaqə icazəsi seçilməlidir")
     boolean permitContact;
+
 }

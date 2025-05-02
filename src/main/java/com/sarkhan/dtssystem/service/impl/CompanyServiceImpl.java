@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -29,6 +30,7 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public Company addCompany(CompanyRequest companyRequest, MultipartFile digitalTransformationPlans, MultipartFile financialStatement, MultipartFile registerCertificate) throws IOException {
         Company company = companyMapper.toEntity(companyRequest);
+        company.setCreatedDate(LocalDateTime.now());
         company.setFinancialNeeding(companyRequest.getFinancialNeeding());
         CompanyFiles companyFiles = new CompanyFiles();
         companyFiles.setRegisterCertificate(cloudinaryService.uploadFile(registerCertificate, "Register Sertificates"));

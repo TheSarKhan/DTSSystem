@@ -12,12 +12,14 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OwnershipLegal {
 
-    @NotBlank(message = "Company type cannot be blank")
+    @NotBlank(message = "Şirkət tipi boş ola bilməz")
     String companyType;
 
-    @NotNull(message = "Percentage cannot be null")
-    @Positive(message = "Percentage must be a positive number")
+    @NotNull(message = "Faiz dəyəri boş olmamalıdır")
+    @Positive(message = "Faiz dəyəri müsbət olmalıdır")
     double percentage;
-    @Size(min = 1, max = 200, message = "Company owners must be between 1 and 200 characters")
-     String companyOwners;
+
+    @Size(min = 1, max = 200, message = "Sahiblər 1 ilə 200 simvol arasında olmalıdır")
+    String companyOwners;
+
 }

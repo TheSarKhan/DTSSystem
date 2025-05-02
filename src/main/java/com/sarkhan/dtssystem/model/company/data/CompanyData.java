@@ -8,39 +8,40 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CompanyData {
-    @NotBlank(message = "Company name cannot be blank")
-    @Size(max = 30, message = "Company name must be at most 30 characters")
+    @NotBlank(message = "Şirkətin adı boş ola bilməz")
+    @NotNull(message = "Şirkətin adı boş olmamalıdır")
+    @Size(max = 30, message = "Şirkətin adı maksimum 30 simvol ola bilər")
     String companyName;
 
-    @NotBlank(message = "Company register number cannot be blank")
-    @Pattern(regexp = "\\d{6,12}", message = "Register number must be between 6 and 12 digits")
+    @NotBlank(message = "Qeydiyyat nömrəsi boş ola bilməz")
+    @Pattern(regexp = "\\d{6,12}", message = "Qeydiyyat nömrəsi 6 ilə 12 rəqəm arasında olmalıdır")
     String companyRegisterNumber;
 
-    @Min(value = 1800, message = "Create year must be no earlier than 1800")
-    @Max(value = 2100, message = "Create year must be no later than 2100")
+    @Min(value = 1800, message = "Yaranma ili 1800-dən əvvəl ola bilməz")
+    @Max(value = 2100, message = "Yaranma ili 2100-dən böyük ola bilməz")
     int createYear;
 
-    @NotBlank(message = "Address cannot be blank")
-    @Size(max = 255, message = "Address must be at most 255 characters")
+    @NotBlank(message = "Ünvan boş ola bilməz")
+    @Size(max = 255, message = "Ünvan maksimum 255 simvol ola bilər")
     String address;
 
-    @NotBlank(message = "City and region cannot be blank")
-    @Size(max = 100, message = "City and region must be at most 100 characters")
+    @NotBlank(message = "Şəhər və region boş ola bilməz")
+    @Size(max = 100, message = "Şəhər və region maksimum 100 simvol ola bilər")
     String cityAndRegion;
 
-    @Pattern(regexp = "^(https?://)?(www\\.)?[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}(/.*)?$",
-            message = "Invalid website URL")
+    @Pattern(regexp = "^(https?://)?(www\\.)?[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}(/.*)?$", message = "Sayt ünvanı yanlışdır")
     String website;
 
-    @NotBlank(message = "Contact name cannot be blank")
-    @Size(max = 100, message = "Contact name must be at most 100 characters")
+    @NotBlank(message = "Əlaqə adı boş ola bilməz")
+    @Size(max = 100, message = "Əlaqə adı maksimum 100 simvol ola bilər")
     String contactName;
 
-    @NotBlank(message = "Contact email cannot be blank")
-    @Email(message = "Invalid email format")
+    @NotBlank(message = "Əlaqə emaili boş ola bilməz")
+    @Email(message = "Email formatı yanlışdır")
     String contactEmail;
 
-    @NotBlank(message = "Contact phone cannot be blank")
-    @Pattern(regexp = "^\\+?[0-9\\-\\s]{7,20}$", message = "Invalid phone number")
+    @NotBlank(message = "Əlaqə nömrəsi boş ola bilməz")
+    @Pattern(regexp = "^\\+?[0-9\\-\\s]{7,20}$", message = "Telefon nömrəsi yanlışdır")
     String contactPhone;
+
 }

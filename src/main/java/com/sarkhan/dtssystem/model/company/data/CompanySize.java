@@ -10,10 +10,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CompanySize {
 
-    @NotBlank(message = "Worker count cannot be blank")
+    @NotBlank(message = "İşçi sayı boş ola bilməz")
     String workerCount;
 
-    @NotBlank(message = "Annual turnover cannot be blank")
-    @PositiveOrZero(message = "Annual turnover must be a positive number or zero")
-    String annualTurnover;
+    @NotBlank(message = "İllik dövriyyə boş ola bilməz")
+     String annualTurnover;
+
 }

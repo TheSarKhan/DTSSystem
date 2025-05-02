@@ -12,16 +12,16 @@ import java.util.List;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DigitalReadiness {
+    List<String> keyChallenges;
 
-    @NotNull(message = "Digital level cannot be null")
+    @NotNull(message = "Rəqəmsal səviyyə boş olmamalıdır")
     byte digitalLevel;
 
-    @NotBlank(message = "Digital tools cannot be blank")
+    @NotBlank(message = "İstifadə olunan rəqəmsal alətlər boş ola bilməz")
     String digitalTools;
 
-     List<String> keyChallenges;
-    @Size(min = 1, max = 50, message = "Company type must be between 1 and 100 characters")
-
-    @NotBlank(message = "Company purpose cannot be blank")
+    @Size(min = 1, max = 100, message = "Şirkətin məqsədi 1 ilə 100 simvol arasında olmalıdır")
+    @NotBlank(message = "Şirkətin məqsədi boş ola bilməz")
     String companyPurpose;
+
 }
