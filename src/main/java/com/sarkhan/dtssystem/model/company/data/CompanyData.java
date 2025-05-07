@@ -20,6 +20,11 @@ public class CompanyData {
     @Min(value = 1800, message = "Yaranma ili 1800-dən əvvəl ola bilməz")
     @Max(value = 2100, message = "Yaranma ili 2100-dən böyük ola bilməz")
     int createYear;
+    @NotBlank(message = "İşçi sayı boş ola bilməz")
+    String workerCount;
+
+    @NotBlank(message = "İllik dövriyyə boş ola bilməz")
+    String annualTurnover;
 
     @NotBlank(message = "Ünvan boş ola bilməz")
     @Size(max = 255, message = "Ünvan maksimum 255 simvol ola bilər")

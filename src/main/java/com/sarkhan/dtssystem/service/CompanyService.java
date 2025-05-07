@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 public interface CompanyService {
-    Company addCompany(CompanyRequest companyRequest, MultipartFile digitalTransformationPlans,MultipartFile financialStatement, MultipartFile registerCertificate) throws IOException;
+    Company addCompany(CompanyRequest companyRequest, MultipartFile financialStatement, MultipartFile registerCertificate,MultipartFile propertyLawCertificate) throws IOException;
     byte[] exportCompaniesToExcel() throws IOException;
 
 }

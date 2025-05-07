@@ -9,5 +9,5 @@ import lombok.experimental.FieldDefaults;
 public class CompanyFiles {
     String registerCertificate;
     String financialStatement;
-    String digitalTransformationPlans;
+    String propertyLawCertificate;
 }

@@ -22,9 +22,9 @@ public class CompanyController {
     private final CompanyService companyService;
 
     @PostMapping("/add")
-    public ResponseEntity<?> addCompany(@Valid @RequestPart("companyRequest") CompanyRequest companyRequest, MultipartFile registerCertificate, MultipartFile financialStatement, MultipartFile digitalTransformationPlans) throws IOException {
+    public ResponseEntity<?> addCompany(@Valid @RequestPart("companyRequest") CompanyRequest companyRequest, MultipartFile registerCertificate, MultipartFile financialStatement ,MultipartFile propertyLawCertificate) throws IOException {
 
-        return ResponseEntity.status(201).body(companyService.addCompany(companyRequest, digitalTransformationPlans, financialStatement, registerCertificate));
+        return ResponseEntity.status(201).body(companyService.addCompany(companyRequest, financialStatement, registerCertificate,propertyLawCertificate));
     }
 
     @GetMapping("/export-excel")

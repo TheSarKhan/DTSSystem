@@ -12,9 +12,29 @@ services:
       - CompanyData:/var/lib/postgresql/data
     networks:
       - dts_network
-
+  user_service:
+    container_name: users
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: User
+    ports:
+      - '5452:5432'
+    volumes:
+      - UserData:/var/lib/postgresql/data
+    networks:
+      - dts_network
+  redis:
+          image: redis:latest
+          ports:
+            - "6379:6379"
+          networks:
+            - dts_network
 volumes:
    CompanyData: {}
+   UserData: {}
+
 networks:
   dts_network:
     driver: bridge

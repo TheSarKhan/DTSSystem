@@ -1,8 +1,18 @@
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: serxan.babayev.06@gmail.com
+    password: klmp yxwd jtdz ptmn
+    properties:
+      mail.transport.protocol: smtp
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.debug: true
   servlet:
     multipart:
-      max-file-size: 5MB
-      max-request-size: 5MB
+      max-file-size: 50MB
+      max-request-size: 100MB
   application:
     name: dtsservice
   datasource:
@@ -10,9 +20,18 @@ spring:
       url: jdbc:postgresql://localhost:5451/Company
       username: root
       password: root
+    second:
+        url: jdbc:postgresql://localhost:5452/User
+        username: root
+        password: root
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 cloudinary:
   cloud_name: dgiumshwd
   api_key: 384648233811973

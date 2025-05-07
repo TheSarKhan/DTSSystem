@@ -25,8 +25,6 @@ CompanyData companyData;
     @JdbcTypeCode(SqlTypes.JSON)
     CompanyFiles companyFiles;
     @JdbcTypeCode(SqlTypes.JSON)
-    CompanySize companySize;
-    @JdbcTypeCode(SqlTypes.JSON)
     DeclarationConsent declarationConsent;
     @JdbcTypeCode(SqlTypes.JSON)
     DigitalLeadership digitalLeadership;
@@ -35,9 +33,7 @@ DigitalReadiness digitalReadiness;
     @JdbcTypeCode(SqlTypes.JSON)
     FinancialNeeding financialNeeding;
     @JdbcTypeCode(SqlTypes.JSON)
-IndustrialBusinessOperations industrialBusinessOperations;
-    @JdbcTypeCode(SqlTypes.JSON)
-OwnershipLegal ownershipLegal;
+    PropertyLaw propertyLaw;
 
     LocalDateTime createdDate;
 }
