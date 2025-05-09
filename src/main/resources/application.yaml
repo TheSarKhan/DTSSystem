@@ -17,19 +17,28 @@ spring:
     name: dtsservice
   datasource:
     first:
-      url: jdbc:postgresql://localhost:5451/Company
+      url: jdbc:postgresql://company_service:5432/Company
+      #url: jdbc:postgresql://localhost:5451/Company
+
       username: root
       password: root
     second:
-        url: jdbc:postgresql://localhost:5452/User
-        username: root
-        password: root
+      #url: jdbc:postgresql://localhost:5452/User
+      url: jdbc:postgresql://user_service:5432/User
+      username: root
+      password: root
   jpa:
     hibernate:
       ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   data:
     redis:
-      host: localhost
+      host: redis
+      #host: localhost
+
       port: 6379
 
 cloudinary:
