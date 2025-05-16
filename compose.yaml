@@ -36,17 +36,6 @@ services:
     networks:
       - dts_network
 
-  app:
-    build: .
-    container_name: springboot-app
-    ports:
-      - "8080:8080"
-    depends_on:
-      - company_service
-      - user_service
-      - redis
-    networks:
-      - dts_network
 
 volumes:
   CompanyData: {}
