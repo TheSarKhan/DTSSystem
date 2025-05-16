@@ -5,38 +5,43 @@ import com.sarkhan.dtssystem.mapper.CompanyMapper;
 import com.sarkhan.dtssystem.model.company.Company;
 import com.sarkhan.dtssystem.model.company.data.*;
 import com.sarkhan.dtssystem.repository.company.CompanyRepository;
-import com.sarkhan.dtssystem.service.CloudinaryService;
 import com.sarkhan.dtssystem.service.CompanyService;
+import com.sarkhan.dtssystem.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 
 @Service
 @RequiredArgsConstructor
 public class CompanyServiceImpl implements CompanyService {
+    @Value("${base-url}")
+    private String baseUrl;
 
     private final CompanyRepository companyRepository;
     private final CompanyMapper companyMapper;
-    private final CloudinaryService cloudinaryService;
-
-    @Override
+    private final FileStorageService fileStorageService;
+     @Override
     public Company addCompany(CompanyRequest companyRequest, MultipartFile financialStatement, MultipartFile registerCertificate,MultipartFile propertyLawCertificate) throws IOException {
         Company company = companyMapper.toEntity(companyRequest);
         company.setCreatedDate(LocalDateTime.now());
         company.setFinancialNeeding(companyRequest.getFinancialNeeding());
         company.setPropertyLaw(companyRequest.getPropertyLaw());
         CompanyFiles companyFiles = new CompanyFiles();
-        companyFiles.setRegisterCertificate(cloudinaryService.uploadFile(registerCertificate, "Register Sertificates"));
-        companyFiles.setFinancialStatement(cloudinaryService.uploadFile(financialStatement, "Financial Statements"));
-         companyFiles.setPropertyLawCertificate(cloudinaryService.uploadFile(propertyLawCertificate, "Property Law Certificates"));
+        companyFiles.setRegisterCertificate(fileStorageService.saveFile(registerCertificate));
+        companyFiles.setFinancialStatement(fileStorageService.saveFile(financialStatement));
+        companyFiles.setPropertyLawCertificate(fileStorageService.saveFile(propertyLawCertificate));
         company.setCompanyFiles(companyFiles);
         return companyRepository.save(company);
     }
@@ -142,12 +147,35 @@ public class CompanyServiceImpl implements CompanyService {
             row.createCell(colNum++).setCellValue(law.getProducts());
             row.createCell(colNum++).setCellValue(law.getExportActivity());
             row.createCell(colNum++).setCellValue(law.getExportBazaar());
+            String baseDownloadUrl = baseUrl+"/files/download/";
+            CreationHelper createHelper = workbook.getCreationHelper();
 
-            row.createCell(colNum++).setCellValue(files.getRegisterCertificate());
-            row.createCell(colNum++).setCellValue(files.getFinancialStatement());
-            row.createCell(colNum++).setCellValue(files.getPropertyLawCertificate());
+// Register Certificate
+            Cell cell1 = row.createCell(colNum++);
+            cell1.setCellValue("Download");
+            Hyperlink hyperlink1 = createHelper.createHyperlink(HyperlinkType.URL);
+            hyperlink1.setAddress(baseDownloadUrl + files.getRegisterCertificate());
+            cell1.setHyperlink(hyperlink1);
 
-            row.createCell(colNum++).setCellValue(company.getCreatedDate().toString());
+// Financial Statement
+            Cell cell2 = row.createCell(colNum++);
+            cell2.setCellValue("Download");
+            Hyperlink hyperlink2 = createHelper.createHyperlink(HyperlinkType.URL);
+            hyperlink2.setAddress(baseDownloadUrl + files.getFinancialStatement());
+            cell2.setHyperlink(hyperlink2);
+
+// Property Law Certificate
+            Cell cell3 = row.createCell(colNum++);
+            cell3.setCellValue("Download");
+            Hyperlink hyperlink3 = createHelper.createHyperlink(HyperlinkType.URL);
+            hyperlink3.setAddress(baseDownloadUrl + files.getPropertyLawCertificate());
+            cell3.setHyperlink(hyperlink3);
+
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+            String formattedDate = company.getCreatedDate().format(formatter);
+
+            row.createCell(colNum++).setCellValue(formattedDate);
 
             // Apply style
             for (int i = 0; i < columns.length; i++) {
