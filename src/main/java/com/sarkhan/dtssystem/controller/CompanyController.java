@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/v1/company")
@@ -23,8 +24,11 @@ public class CompanyController {
 
     @PostMapping("/add")
     public ResponseEntity<?> addCompany(@Valid @RequestPart("companyRequest") CompanyRequest companyRequest, MultipartFile registerCertificate, MultipartFile financialStatement ,MultipartFile propertyLawCertificate) throws IOException {
-
-        return ResponseEntity.status(201).body(companyService.addCompany(companyRequest, financialStatement, registerCertificate,propertyLawCertificate));
+        if (companyRequest.getCompanyData().getCreateYear() > LocalDate.now().getYear()) {
+            return ResponseEntity.status(400).body("Yaranma ili cari ildən böyük ola bilməz");
+         }
+        companyService.addCompany(companyRequest, financialStatement, registerCertificate,propertyLawCertificate);
+        return ResponseEntity.status(201).body("Müraciətiniz uğurla gerçəkləşdi");
     }
 
     @GetMapping("/export-excel")

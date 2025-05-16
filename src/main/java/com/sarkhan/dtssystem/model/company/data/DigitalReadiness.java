@@ -20,8 +20,9 @@ public class DigitalReadiness {
     @NotEmpty(message = "İstifadə olunan rəqəmsal alətlər boş ola bilməz")
     List<String> digitalTools;
 
-    @Size(min = 1, max = 100, message = "Şirkətin məqsədi 1 ilə 100 simvol arasında olmalıdır")
     @NotBlank(message = "Şirkətin məqsədi boş ola bilməz")
+    @Size(max = 100, message = "Şirkətin məqsədi maksimum 100 simvol ola bilər")
     String companyPurpose;
+
 
 }

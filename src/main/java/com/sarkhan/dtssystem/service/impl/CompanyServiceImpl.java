@@ -119,7 +119,7 @@ public class CompanyServiceImpl implements CompanyService {
             row.createCell(colNum++).setCellValue(data.getContactEmail());
             row.createCell(colNum++).setCellValue(data.getContactPhone());
             row.createCell(colNum++).setCellValue(data.getWorkerCount());
-            row.createCell(colNum++).setCellValue(data.getAnnualTurnover());
+            row.createCell(colNum++).setCellValue(data.getAnnualTurnover()+ " AZN");
 
             row.createCell(colNum++).setCellValue(consent.isDataIsReal());
             row.createCell(colNum++).setCellValue(consent.isPermitContact());
@@ -133,13 +133,14 @@ public class CompanyServiceImpl implements CompanyService {
             row.createCell(colNum++).setCellValue(String.join(", ", readiness.getKeyChallenges()));
             row.createCell(colNum++).setCellValue(readiness.getCompanyPurpose());
 
-            row.createCell(colNum++).setCellValue(need.isFinancialNeed());
-            row.createCell(colNum++).setCellValue(need.getNeededBudget());
+            row.createCell(colNum++).setCellValue(need.getFinancialNeed() );
+
+            row.createCell(colNum++).setCellValue(need.getNeededBudget() + " AZN");
 
             row.createCell(colNum++).setCellValue(law.getBusinessOperations());
             row.createCell(colNum++).setCellValue(law.getCompanyLawType());
             row.createCell(colNum++).setCellValue(law.getProducts());
-            row.createCell(colNum++).setCellValue(law.isExportActivity());
+            row.createCell(colNum++).setCellValue(law.getExportActivity());
             row.createCell(colNum++).setCellValue(law.getExportBazaar());
 
             row.createCell(colNum++).setCellValue(files.getRegisterCertificate());
