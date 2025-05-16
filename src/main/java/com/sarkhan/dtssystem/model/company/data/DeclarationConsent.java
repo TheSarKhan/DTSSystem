@@ -13,5 +13,7 @@ public class DeclarationConsent {
 
     @NotNull(message = "Əlaqə icazəsi seçilməlidir")
     boolean permitContact;
+    @NotNull(message = "Şərti qəbul etmə seçilməlidir")
+    boolean privacyAcceptance;
 
 }

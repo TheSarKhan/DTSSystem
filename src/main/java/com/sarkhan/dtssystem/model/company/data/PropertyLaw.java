@@ -10,19 +10,20 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PropertyLaw {
-
     @NotBlank(message = "Biznes əməliyyatları boş ola bilməz")
     String businessOperations;
+
     @NotBlank(message = "Hüquqi növ boş ola bilməz")
     String companyLawType;
 
-    @Size(min = 1, max = 150, message = "Məhsullar 1 ilə 150 simvol arasında olmalıdır")
+    @Size(min = 3, message = "Məhsullar minimum 3 simvol olmalıdır")
     @NotBlank(message = "Məhsullar boş ola bilməz")
     String products;
 
     @NotNull(message = "İxrac fəaliyyəti seçilməlidir")
-    boolean exportActivity;
+    Boolean exportActivity;
 
-    @NotNull(message = "İxrac fəaliyyəti seçilməlidir")
+    @NotBlank(message = "İxrac bazarı boş ola bilməz")
     String exportBazaar;
+
 }
