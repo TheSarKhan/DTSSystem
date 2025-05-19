@@ -16,8 +16,7 @@ spring:
   application:
     name: dtsservice
   datasource:
-    first:
-      #url: jdbc:postgresql://company_service:5432/Company
+    first: #url: jdbc:postgresql://company_service:5432/Company
       url: jdbc:postgresql://localhost:5451/Company
 
       username: root
@@ -35,8 +34,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   data:
-    redis:
-      #host: redis
+    redis: #host: redis
       host: localhost
 
       port: 6379

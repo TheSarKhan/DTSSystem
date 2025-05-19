@@ -146,7 +146,8 @@ public class CompanyServiceImpl implements CompanyService {
             row.createCell(colNum++).setCellValue(law.getCompanyLawType());
             row.createCell(colNum++).setCellValue(law.getProducts());
             row.createCell(colNum++).setCellValue(law.getExportActivity());
-            row.createCell(colNum++).setCellValue(law.getExportBazaar());
+            String exportBazaarText = String.join(", ", law.getExportBazaar());
+            row.createCell(colNum++).setCellValue(exportBazaarText);
             String baseDownloadUrl = baseUrl+"/files/download/";
             CreationHelper createHelper = workbook.getCreationHelper();
 
