@@ -26,14 +26,14 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CompanyServiceImpl implements CompanyService {
-    @Value("${base-url}")
-    private String baseUrl;
-
     private final CompanyRepository companyRepository;
     private final CompanyMapper companyMapper;
     private final FileStorageService fileStorageService;
-     @Override
-    public Company addCompany(CompanyRequest companyRequest, MultipartFile financialStatement, MultipartFile registerCertificate,MultipartFile propertyLawCertificate) throws IOException {
+    @Value("${base-url}")
+    private String baseUrl;
+
+    @Override
+    public Company addCompany(CompanyRequest companyRequest, MultipartFile financialStatement, MultipartFile registerCertificate, MultipartFile propertyLawCertificate) throws IOException {
         Company company = companyMapper.toEntity(companyRequest);
         company.setCreatedDate(LocalDateTime.now());
         company.setFinancialNeeding(companyRequest.getFinancialNeeding());
@@ -51,7 +51,6 @@ public class CompanyServiceImpl implements CompanyService {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Companies");
 
-        // 🔹 Header Font & Style
         Font headerFont = workbook.createFont();
         headerFont.setBold(true);
         headerFont.setFontHeightInPoints((short) 12);
@@ -68,7 +67,6 @@ public class CompanyServiceImpl implements CompanyService {
         headerCellStyle.setBorderRight(BorderStyle.THIN);
         headerCellStyle.setBorderLeft(BorderStyle.THIN);
 
-        // 🔹 Data Style
         CellStyle dataCellStyle = workbook.createCellStyle();
         dataCellStyle.setWrapText(true);
         dataCellStyle.setBorderBottom(BorderStyle.THIN);
@@ -76,7 +74,6 @@ public class CompanyServiceImpl implements CompanyService {
         dataCellStyle.setBorderRight(BorderStyle.THIN);
         dataCellStyle.setBorderLeft(BorderStyle.THIN);
 
-        // 🔹 Column headers
         String[] columns = {
                 "ID", "Company Name", "Register Number", "Create Year", "Address",
                 "City & Region", "Website", "Contact Name", "Contact Email", "Contact Phone",
@@ -98,7 +95,6 @@ public class CompanyServiceImpl implements CompanyService {
             cell.setCellStyle(headerCellStyle);
         }
 
-        // 🔹 Fetch data
         List<Company> companies = companyRepository.findAll();
         int rowNum = 1;
         for (Company company : companies) {
@@ -124,7 +120,7 @@ public class CompanyServiceImpl implements CompanyService {
             row.createCell(colNum++).setCellValue(data.getContactEmail());
             row.createCell(colNum++).setCellValue(data.getContactPhone());
             row.createCell(colNum++).setCellValue(data.getWorkerCount());
-            row.createCell(colNum++).setCellValue(data.getAnnualTurnover()+ " AZN");
+            row.createCell(colNum++).setCellValue(data.getAnnualTurnover() + " AZN");
 
             row.createCell(colNum++).setCellValue(consent.isDataIsReal());
             row.createCell(colNum++).setCellValue(consent.isPermitContact());
@@ -138,7 +134,7 @@ public class CompanyServiceImpl implements CompanyService {
             row.createCell(colNum++).setCellValue(String.join(", ", readiness.getKeyChallenges()));
             row.createCell(colNum++).setCellValue(readiness.getCompanyPurpose());
 
-            row.createCell(colNum++).setCellValue(need.getFinancialNeed() );
+            row.createCell(colNum++).setCellValue(need.getFinancialNeed());
 
             row.createCell(colNum++).setCellValue(need.getNeededBudget() + " AZN");
 
@@ -148,7 +144,7 @@ public class CompanyServiceImpl implements CompanyService {
             row.createCell(colNum++).setCellValue(law.getExportActivity());
             String exportBazaarText = String.join(", ", law.getExportBazaar());
             row.createCell(colNum++).setCellValue(exportBazaarText);
-            String baseDownloadUrl = baseUrl+"/files/download/";
+            String baseDownloadUrl = baseUrl + "/files/download/";
             CreationHelper createHelper = workbook.getCreationHelper();
 
 // Register Certificate
@@ -178,13 +174,11 @@ public class CompanyServiceImpl implements CompanyService {
 
             row.createCell(colNum++).setCellValue(formattedDate);
 
-            // Apply style
             for (int i = 0; i < columns.length; i++) {
                 row.getCell(i).setCellStyle(dataCellStyle);
             }
         }
 
-        // 🔹 Autosize
         for (int i = 0; i < columns.length; i++) {
             sheet.autoSizeColumn(i);
         }

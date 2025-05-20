@@ -1,7 +1,6 @@
 package com.sarkhan.dtssystem.controller;
 
 import com.sarkhan.dtssystem.dto.request.CompanyRequest;
-import com.sarkhan.dtssystem.repository.company.CompanyRepository;
 import com.sarkhan.dtssystem.service.CompanyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +21,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class CompanyController {
 
-    private final CompanyRepository companyRepository;
-    private final CompanyService companyService;
+     private final CompanyService companyService;
 
     @PostMapping("/add")
     public ResponseEntity<?> addCompany(
@@ -39,8 +37,7 @@ public class CompanyController {
 
         List<String> errors = new ArrayList<>();
 
-        // Kontrolleri yap ve hataları topla
-        if (!isAllowed(registerCertificate, Set.of("pdf", "doc", "docx"))) {
+         if (!isAllowed(registerCertificate, Set.of("pdf", "doc", "docx"))) {
             errors.add("Şirkətin dövlət reyestrindən çıxarışı sənədi pdf, doc və ya docx olmalıdır.");
         }
 
@@ -57,7 +54,7 @@ public class CompanyController {
         }
 
         companyService.addCompany(companyRequest, financialStatement, registerCertificate, propertyLawCertificate);
-        return ResponseEntity.status(201).body("✅ Müraciətiniz uğurla gerçəkləşdi");
+        return ResponseEntity.status(201).body("Müraciətiniz uğurla gerçəkləşdi");
     }
 
     private boolean isAllowed(MultipartFile file, Set<String> allowedExtensions) {
