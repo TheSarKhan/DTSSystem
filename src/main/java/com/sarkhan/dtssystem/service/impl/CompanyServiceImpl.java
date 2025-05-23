@@ -5,38 +5,50 @@ import com.sarkhan.dtssystem.mapper.CompanyMapper;
 import com.sarkhan.dtssystem.model.company.Company;
 import com.sarkhan.dtssystem.model.company.data.*;
 import com.sarkhan.dtssystem.repository.company.CompanyRepository;
-import com.sarkhan.dtssystem.service.CloudinaryService;
 import com.sarkhan.dtssystem.service.CompanyService;
+import com.sarkhan.dtssystem.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-
 
 @Service
 @RequiredArgsConstructor
 public class CompanyServiceImpl implements CompanyService {
-
     private final CompanyRepository companyRepository;
     private final CompanyMapper companyMapper;
-    private final CloudinaryService cloudinaryService;
+    private final FileStorageService fileStorageService;
+
+    @Value("${base-url}")
+    private String baseUrl;
+
+    private static String safe(Object value) {
+        return value == null ? "Məlumat yoxdur" : value.toString();
+    }
+
+    private static String safeJoin(List<String> list) {
+        return list == null || list.isEmpty() ? "Məlumat yoxdur" : String.join(", ", list);
+    }
 
     @Override
-    public Company addCompany(CompanyRequest companyRequest, MultipartFile financialStatement, MultipartFile registerCertificate,MultipartFile propertyLawCertificate) throws IOException {
+    public Company addCompany(CompanyRequest companyRequest, MultipartFile financialStatement, MultipartFile registerCertificate, MultipartFile propertyLawCertificate) throws IOException {
         Company company = companyMapper.toEntity(companyRequest);
         company.setCreatedDate(LocalDateTime.now());
         company.setFinancialNeeding(companyRequest.getFinancialNeeding());
         company.setPropertyLaw(companyRequest.getPropertyLaw());
         CompanyFiles companyFiles = new CompanyFiles();
-        companyFiles.setRegisterCertificate(cloudinaryService.uploadFile(registerCertificate, "Register Sertificates"));
-        companyFiles.setFinancialStatement(cloudinaryService.uploadFile(financialStatement, "Financial Statements"));
-         companyFiles.setPropertyLawCertificate(cloudinaryService.uploadFile(propertyLawCertificate, "Property Law Certificates"));
+        companyFiles.setRegisterCertificate(fileStorageService.saveFile(registerCertificate));
+        companyFiles.setFinancialStatement(fileStorageService.saveFile(financialStatement));
+        companyFiles.setPropertyLawCertificate(fileStorageService.saveFile(propertyLawCertificate));
         company.setCompanyFiles(companyFiles);
         return companyRepository.save(company);
     }
@@ -46,7 +58,6 @@ public class CompanyServiceImpl implements CompanyService {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Companies");
 
-        // 🔹 Header Font & Style
         Font headerFont = workbook.createFont();
         headerFont.setBold(true);
         headerFont.setFontHeightInPoints((short) 12);
@@ -63,7 +74,6 @@ public class CompanyServiceImpl implements CompanyService {
         headerCellStyle.setBorderRight(BorderStyle.THIN);
         headerCellStyle.setBorderLeft(BorderStyle.THIN);
 
-        // 🔹 Data Style
         CellStyle dataCellStyle = workbook.createCellStyle();
         dataCellStyle.setWrapText(true);
         dataCellStyle.setBorderBottom(BorderStyle.THIN);
@@ -71,7 +81,6 @@ public class CompanyServiceImpl implements CompanyService {
         dataCellStyle.setBorderRight(BorderStyle.THIN);
         dataCellStyle.setBorderLeft(BorderStyle.THIN);
 
-        // 🔹 Column headers
         String[] columns = {
                 "ID", "Company Name", "Register Number", "Create Year", "Address",
                 "City & Region", "Website", "Contact Name", "Contact Email", "Contact Phone",
@@ -93,7 +102,6 @@ public class CompanyServiceImpl implements CompanyService {
             cell.setCellStyle(headerCellStyle);
         }
 
-        // 🔹 Fetch data
         List<Company> companies = companyRepository.findAll();
         int rowNum = 1;
         for (Company company : companies) {
@@ -109,52 +117,81 @@ public class CompanyServiceImpl implements CompanyService {
             CompanyFiles files = company.getCompanyFiles();
 
             row.createCell(colNum++).setCellValue(company.getId());
-            row.createCell(colNum++).setCellValue(data.getCompanyName());
-            row.createCell(colNum++).setCellValue(data.getCompanyRegisterNumber());
-            row.createCell(colNum++).setCellValue(data.getCreateYear());
-            row.createCell(colNum++).setCellValue(data.getAddress());
-            row.createCell(colNum++).setCellValue(data.getCityAndRegion());
-            row.createCell(colNum++).setCellValue(data.getWebsite());
-            row.createCell(colNum++).setCellValue(data.getContactName());
-            row.createCell(colNum++).setCellValue(data.getContactEmail());
-            row.createCell(colNum++).setCellValue(data.getContactPhone());
-            row.createCell(colNum++).setCellValue(data.getWorkerCount());
-            row.createCell(colNum++).setCellValue(data.getAnnualTurnover());
+            row.createCell(colNum++).setCellValue(safe(data.getCompanyName()));
+            row.createCell(colNum++).setCellValue(safe(data.getCompanyRegisterNumber()));
+            row.createCell(colNum++).setCellValue(safe(data.getCreateYear()));
+            row.createCell(colNum++).setCellValue(safe(data.getAddress()));
+            row.createCell(colNum++).setCellValue(safe(data.getCityAndRegion()));
+            row.createCell(colNum++).setCellValue(safe(data.getWebsite()));
+            row.createCell(colNum++).setCellValue(safe(data.getContactName()));
+            row.createCell(colNum++).setCellValue(safe(data.getContactEmail()));
+            row.createCell(colNum++).setCellValue(safe(data.getContactPhone()));
+            row.createCell(colNum++).setCellValue(safe(data.getWorkerCount()));
+            row.createCell(colNum++).setCellValue(safe(data.getAnnualTurnover()) + " AZN");
 
-            row.createCell(colNum++).setCellValue(consent.isDataIsReal());
-            row.createCell(colNum++).setCellValue(consent.isPermitContact());
+            row.createCell(colNum++).setCellValue(consent != null && consent.isDataIsReal());
+            row.createCell(colNum++).setCellValue(consent != null && consent.isPermitContact());
 
-            row.createCell(colNum++).setCellValue(leadership.isDigitalTeamOrLead());
-            row.createCell(colNum++).setCellValue(leadership.isDigitalPath());
-            row.createCell(colNum++).setCellValue(leadership.isDigitalTransformationLoyality());
+            row.createCell(colNum++).setCellValue(leadership != null && leadership.isDigitalTeamOrLead());
+            row.createCell(colNum++).setCellValue(leadership != null && leadership.isDigitalPath());
+            row.createCell(colNum++).setCellValue(leadership != null && leadership.isDigitalTransformationLoyality());
 
-            row.createCell(colNum++).setCellValue(readiness.getDigitalLevel());
-            row.createCell(colNum++).setCellValue(String.join(", ", readiness.getDigitalTools()));
-            row.createCell(colNum++).setCellValue(String.join(", ", readiness.getKeyChallenges()));
-            row.createCell(colNum++).setCellValue(readiness.getCompanyPurpose());
+            row.createCell(colNum++).setCellValue(safe(readiness != null ? readiness.getDigitalLevel() : null));
+            row.createCell(colNum++).setCellValue(safeJoin(readiness != null ? readiness.getDigitalTools() : null));
+            row.createCell(colNum++).setCellValue(safeJoin(readiness != null ? readiness.getKeyChallenges() : null));
+            row.createCell(colNum++).setCellValue(safe(readiness != null ? readiness.getCompanyPurpose() : null));
 
-            row.createCell(colNum++).setCellValue(need.isFinancialNeed());
-            row.createCell(colNum++).setCellValue(need.getNeededBudget());
+            row.createCell(colNum++).setCellValue(safe(need != null ? need.getFinancialNeed() : null));
+            row.createCell(colNum++).setCellValue(safe(need != null ? need.getNeededBudget() : null) + " AZN");
 
-            row.createCell(colNum++).setCellValue(law.getBusinessOperations());
-            row.createCell(colNum++).setCellValue(law.getCompanyLawType());
-            row.createCell(colNum++).setCellValue(law.getProducts());
-            row.createCell(colNum++).setCellValue(law.isExportActivity());
-            row.createCell(colNum++).setCellValue(law.getExportBazaar());
+            row.createCell(colNum++).setCellValue(safe(law != null ? law.getBusinessOperations() : null));
+            row.createCell(colNum++).setCellValue(safe(law != null ? law.getCompanyLawType() : null));
+            row.createCell(colNum++).setCellValue(safe(law != null ? law.getProducts() : null));
+            row.createCell(colNum++).setCellValue(safe(law != null ? law.getExportActivity() : null));
+            row.createCell(colNum++).setCellValue(safeJoin(law != null ? law.getExportBazaar() : null));
 
-            row.createCell(colNum++).setCellValue(files.getRegisterCertificate());
-            row.createCell(colNum++).setCellValue(files.getFinancialStatement());
-            row.createCell(colNum++).setCellValue(files.getPropertyLawCertificate());
+            String baseDownloadUrl = baseUrl + "/files/download/";
+            CreationHelper createHelper = workbook.getCreationHelper();
 
-            row.createCell(colNum++).setCellValue(company.getCreatedDate().toString());
+            Cell cell1 = row.createCell(colNum++);
+            if (files != null && files.getRegisterCertificate() != null) {
+                cell1.setCellValue("Download");
+                Hyperlink hyperlink1 = createHelper.createHyperlink(HyperlinkType.URL);
+                hyperlink1.setAddress(baseDownloadUrl + files.getRegisterCertificate());
+                cell1.setHyperlink(hyperlink1);
+            } else {
+                cell1.setCellValue("Məlumat yoxdur");
+            }
 
-            // Apply style
+            Cell cell2 = row.createCell(colNum++);
+            if (files != null && files.getFinancialStatement() != null) {
+                cell2.setCellValue("Download");
+                Hyperlink hyperlink2 = createHelper.createHyperlink(HyperlinkType.URL);
+                hyperlink2.setAddress(baseDownloadUrl + files.getFinancialStatement());
+                cell2.setHyperlink(hyperlink2);
+            } else {
+                cell2.setCellValue("Məlumat yoxdur");
+            }
+
+            Cell cell3 = row.createCell(colNum++);
+            if (files != null && files.getPropertyLawCertificate() != null) {
+                cell3.setCellValue("Download");
+                Hyperlink hyperlink3 = createHelper.createHyperlink(HyperlinkType.URL);
+                hyperlink3.setAddress(baseDownloadUrl + files.getPropertyLawCertificate());
+                cell3.setHyperlink(hyperlink3);
+            } else {
+                cell3.setCellValue("Məlumat yoxdur");
+            }
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+            String formattedDate = company.getCreatedDate() != null ? company.getCreatedDate().format(formatter) : "Məlumat yoxdur";
+            row.createCell(colNum++).setCellValue(formattedDate);
+
             for (int i = 0; i < columns.length; i++) {
                 row.getCell(i).setCellStyle(dataCellStyle);
             }
         }
 
-        // 🔹 Autosize
         for (int i = 0; i < columns.length; i++) {
             sheet.autoSizeColumn(i);
         }
@@ -165,5 +202,4 @@ public class CompanyServiceImpl implements CompanyService {
 
         return outputStream.toByteArray();
     }
-
 }
