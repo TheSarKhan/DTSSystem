@@ -67,8 +67,7 @@ public class AuthorizationController {
         if (otpService.validateOTP(email, otp)) {
             otpService.clearOTP(email);
 
-            // Geçici Reset Token Üret ve Redis'e Kaydet
-            String resetToken = UUID.randomUUID().toString();
+             String resetToken = UUID.randomUUID().toString();
             redisService.saveResetToken(email, resetToken, 10);
 
             return ResponseEntity.ok(resetToken);

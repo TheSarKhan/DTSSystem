@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/api/v1/auth/**","api/v1/company/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**","api/v1/company/**","/files/**","/api/v1/**","/uploads/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -50,16 +50,29 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // Frontend URL
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        configuration.setExposedHeaders(List.of("Authorization"));
+
+        // Tüm domainlere izin verir ama allowCredentials ile uyumludur
+        configuration.setAllowedOriginPatterns(List.of("*"));
+
+        // Eğer frontend isteklerinde çerez veya Authorization header varsa true olmalı
         configuration.setAllowCredentials(true);
 
+        // İzin verilen HTTP metodları
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        // İzin verilen header'lar (örn. Authorization, Content-Type vs.)
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+
+        // Cevapta görünür olmasını istediğin header'lar
+        configuration.setExposedHeaders(List.of("Authorization"));
+
+        // Tüm endpointler için bu CORS config'i uygula
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
+
         return source;
     }
+
 
 
 }

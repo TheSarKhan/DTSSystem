@@ -1,9 +1,6 @@
 package com.sarkhan.dtssystem.model.company.data;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -16,13 +13,16 @@ public class DigitalReadiness {
     List<String> keyChallenges;
 
     @NotNull(message = "Rəqəmsal səviyyə boş olmamalıdır")
-    byte digitalLevel;
+    @Min(value = 1, message = "Rəqəmsal səviyyə minimum 1 olmalıdır")
+    @Max(value = 5, message = "Rəqəmsal səviyyə maksimum 5 olmalıdır")
+    private Byte digitalLevel;
 
     @NotEmpty(message = "İstifadə olunan rəqəmsal alətlər boş ola bilməz")
     List<String> digitalTools;
 
-    @Size(min = 1, max = 100, message = "Şirkətin məqsədi 1 ilə 100 simvol arasında olmalıdır")
     @NotBlank(message = "Şirkətin məqsədi boş ola bilməz")
+    @Size(max = 100, message = "Şirkətin məqsədi maksimum 100 simvol ola bilər")
     String companyPurpose;
+
 
 }

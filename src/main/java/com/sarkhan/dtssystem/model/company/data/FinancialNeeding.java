@@ -12,7 +12,9 @@ import lombok.experimental.FieldDefaults;
 public class FinancialNeeding {
 
     @NotNull(message = "Maliyyə ehtiyacı razılığı seçilməlidir")
-    boolean financialNeed;
+    Boolean financialNeed;
 
-     String neededBudget;
+    @PositiveOrZero(message = "Büdcə mənfi ola bilməz")
+    long neededBudget;
+
 }

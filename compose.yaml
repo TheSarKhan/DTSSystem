@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   company_service:
     container_name: companies
@@ -12,6 +14,7 @@ services:
       - CompanyData:/var/lib/postgresql/data
     networks:
       - dts_network
+
   user_service:
     container_name: users
     image: postgres:latest
@@ -25,16 +28,31 @@ services:
       - UserData:/var/lib/postgresql/data
     networks:
       - dts_network
+  content_service:
+    container_name: content
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: Content
+    ports:
+      - '5453:5432'
+    volumes:
+      - ContentData:/var/lib/postgresql/data
+    networks:
+      - dts_network
   redis:
-          image: redis:latest
-          ports:
-            - "6379:6379"
-          networks:
-            - dts_network
-volumes:
-   CompanyData: {}
-   UserData: {}
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - dts_network
 
+
+volumes:
+  CompanyData: {}
+  UserData: {}
+  ContentData: {}
 networks:
   dts_network:
     driver: bridge

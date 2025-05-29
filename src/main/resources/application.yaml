@@ -11,25 +11,37 @@ spring:
       mail.debug: true
   servlet:
     multipart:
-      max-file-size: 50MB
-      max-request-size: 100MB
+      max-file-size: 20MB
+      max-request-size: 80MB
   application:
     name: dtsservice
   datasource:
-    first:
+    first: #url: jdbc:postgresql://company_service:5432/Company
       url: jdbc:postgresql://localhost:5451/Company
+
       username: root
       password: root
     second:
-        url: jdbc:postgresql://localhost:5452/User
-        username: root
-        password: root
+      url: jdbc:postgresql://localhost:5452/User
+      #url: jdbc:postgresql://user_service:5432/User
+      username: root
+      password: root
+    third:
+      url: jdbc:postgresql://localhost:5453/Content
+      #url: jdbc:postgresql://user_service:5432/User
+      username: root
+      password: root
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   data:
-    redis:
+    redis: #host: redis
       host: localhost
+
       port: 6379
 
 cloudinary:
