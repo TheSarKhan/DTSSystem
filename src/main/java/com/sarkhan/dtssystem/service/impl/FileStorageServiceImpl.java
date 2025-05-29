@@ -7,7 +7,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -35,10 +37,7 @@ public class FileStorageServiceImpl implements FileStorageService {
             throw new IOException("Fayl uzantısı tapılmadı.");
         }
 
-        if (originalFilename != null && originalFilename.contains(".")) {
-            fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        }
-
+        fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
         String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
         String uniqueName = timestamp + "_" + UUID.randomUUID() + fileExtension;
 
@@ -46,5 +45,35 @@ public class FileStorageServiceImpl implements FileStorageService {
         Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
 
         return uniqueName;
+    }
+
+    @Override
+    public List<String> saveFiles(List<MultipartFile> files) throws IOException {
+        List<String> savedFileNames = new ArrayList<>();
+        for (MultipartFile file : files) {
+            String savedFileName = saveFile(file);
+            savedFileNames.add(savedFileName);
+        }
+        return savedFileNames;
+    }
+
+    @Override
+    public boolean deleteFile(String fileName) {
+        try {
+            Path filePath = this.storageDirectory.resolve(fileName);
+            return Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public List<Boolean> deleteFiles(List<String> fileNames) {
+        List<Boolean> deletionResults = new ArrayList<>();
+        for (String fileName : fileNames) {
+            deletionResults.add(deleteFile(fileName));
+        }
+        return deletionResults;
     }
 }

@@ -26,6 +26,11 @@ spring:
       #url: jdbc:postgresql://user_service:5432/User
       username: root
       password: root
+    third:
+      url: jdbc:postgresql://localhost:5453/Content
+      #url: jdbc:postgresql://user_service:5432/User
+      username: root
+      password: root
   jpa:
     hibernate:
       ddl-auto: update
