@@ -29,7 +29,7 @@ public class CompanyData {
     String annualTurnover;
 
     @NotBlank(message = "Ünvan boş ola bilməz")
-    @Size(min = 5, max = 255, message = "Şirkət ünvanı minimum 5 simvol daxil edilməlidir")
+    //@Size(min = 5, max = 255, message = "Şirkət ünvanı minimum 5 simvol daxil edilməlidir")
     String address;
 
     @NotBlank(message = "Şəhər və ya regionu daxil edin")
