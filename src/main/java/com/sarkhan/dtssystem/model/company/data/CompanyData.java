@@ -35,8 +35,9 @@ public class CompanyData {
     @NotBlank(message = "Şəhər və ya regionu daxil edin")
      String cityAndRegion;
 
-    @Pattern(regexp = "^(https?://)?(www\\.)?[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}(/.*)?$", message = "Sayt ünvanı yanlışdır")
+    @Pattern(regexp = "^(https?://)(www\\.)?[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}(/.*)?$", message = "Sayt ünvanı yanlışdır")
     String website;
+
 
     @NotBlank(message = "Əlaqələndirici şəxs adı tələb olunur zəhmət olmasa şəxsin adın daxil edin.")
     @Size(max = 100, message = "Əlaqələndirici şəxs adı maksimum 100 simvol ola bilər")
