@@ -40,7 +40,7 @@ public class CompanyData {
 
 
     @NotBlank(message = "Əlaqələndirici şəxs adı tələb olunur zəhmət olmasa şəxsin adın daxil edin.")
-    @Size(max = 100, message = "Əlaqələndirici şəxs adı maksimum 100 simvol ola bilər")
+    @Size(max = 100,min = 2, message = "Əlaqələndirici şəxs adı minimum 2 maksimum 100 simvol ola bilər")
     String contactName;
 
     @NotBlank(message = "Əlaqə emaili boş ola bilməz")
