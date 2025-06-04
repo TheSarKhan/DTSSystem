@@ -19,7 +19,7 @@ public class CompanyData {
     @NotBlank(message = "Qeydiyyat nömrəsi boş ola bilməz")
     @Min(value = 20, message = "Qeydiyyat nömrəsi minimum 20 simvol olmalıdır")
     String companyRegisterNumber;
-     @Min(value = 1900, message = "Yaranma ili 1900-dən əvvəl ola bilməz")
+     @Min(value = 1000, message = "Yaranma ili 1900-dən əvvəl ola bilməz")
      int createYear;
 
     @NotBlank(message = "Tam ştatlı işçilərin sayı boş buraxıla bilməz və seçimlərdən biri mütləq seçilməlidir.")
