@@ -5,6 +5,7 @@ import com.sarkhan.dtssystem.dto.request.CompanyRequest;
 import com.sarkhan.dtssystem.service.CompanyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
@@ -23,6 +24,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/v1/company")
 @RequiredArgsConstructor
+@Slf4j
 public class CompanyController {
 
     private final CompanyService companyService;
@@ -65,48 +67,67 @@ public class CompanyController {
             @RequestPart("propertyLawCertificate") MultipartFile propertyLawCertificate,
             @RequestParam("recaptchaToken") String recaptchaToken
     ) throws IOException {
+
+        log.info("Yeni şirkət müraciəti alındı: {} ({})  ",
+                companyRequest.getCompanyData().getCompanyName(),
+                companyRequest.getCompanyData().getCompanyRegisterNumber());
+
         if (!verifyRecaptcha(recaptchaToken)) {
+            log.warn("reCAPTCHA doğrulaması uğursuz oldu.  ");
+
             return ResponseEntity.status(400).body("reCAPTCHA yoxlaması uğursuz oldu");
         }
+
         if (companyRequest.getCompanyData().getCreateYear() > LocalDate.now().getYear()) {
+            log.warn("Yaranma ili cari ildən böyük: {}  ", companyRequest.getCompanyData().getCreateYear());
             return ResponseEntity.status(400).body("Yaranma ili cari ildən böyük ola bilməz");
         }
 
         List<String> errors = new ArrayList<>();
 
+        // 1. Dövlət reyestri çıxarışı
         if (registerCertificate.getOriginalFilename().endsWith(".pdf")) {
             List<String> jsCodes = pdfScriptChecker.findJavaScriptCodes(registerCertificate.getInputStream());
             if (!jsCodes.isEmpty()) {
+                log.error("Reyestr sənədində JavaScript tapıldı: {} ", jsCodes);
                 errors.add("Şirkətin dövlət reyestrindən çıxarışı sənədində təhlükəli skript aşkarlandı!");
             }
         }
 
+        // 2. Maliyyə hesabatı
         if (!isAllowed(financialStatement, Set.of("pdf", "doc", "docx", "xls", "xlsx"))) {
+            log.warn("Maliyyə sənədinin formatı düzgün deyil: {} ", financialStatement.getOriginalFilename());
             errors.add("Maliyyə hesabatları sənədi pdf, doc, docx, xls və ya xlsx olmalıdır.");
         } else if (financialStatement.getOriginalFilename().endsWith(".pdf")) {
             List<String> jsCodes = pdfScriptChecker.findJavaScriptCodes(financialStatement.getInputStream());
             if (!jsCodes.isEmpty()) {
+                log.error("Maliyyə sənədində JavaScript tapıldı: {} ", jsCodes);
                 errors.add("Maliyyə hesabatları sənədində təhlükəli skript aşkarlandı!");
             }
         }
 
+        // 3. Əmlak sənədi
         if (!isAllowed(propertyLawCertificate, Set.of("pdf", "doc", "docx"))) {
+            log.warn("Əmlak sənədinin formatı düzgün deyil: {} ", propertyLawCertificate.getOriginalFilename());
             errors.add("Təsdiqedici sənəd pdf, doc və ya docx olmalıdır.");
         } else if (propertyLawCertificate.getOriginalFilename().endsWith(".pdf")) {
             List<String> jsCodes = pdfScriptChecker.findJavaScriptCodes(propertyLawCertificate.getInputStream());
             if (!jsCodes.isEmpty()) {
+                log.error("Əmlak sənədində JavaScript tapıldı: {} ", jsCodes);
                 errors.add("Təsdiqedici sənəddə təhlükəli skript aşkarlandı!");
             }
         }
 
         if (!errors.isEmpty()) {
+            log.warn("Şirkət əlavə edilə bilmədi. Xətalar: {} ", errors);
             return ResponseEntity.status(400).body(errors);
         }
 
         companyService.addCompany(companyRequest, financialStatement, registerCertificate, propertyLawCertificate);
+        log.info("Şirkət uğurla əlavə edildi: {} ", companyRequest.getCompanyData().getCompanyRegisterNumber());
+
         return ResponseEntity.status(201).body("Müraciətiniz uğurla gerçəkləşdi");
     }
-
 
     private boolean isAllowed(MultipartFile file, Set<String> allowedExtensions) {
         if (file.isEmpty()) return false;
@@ -118,14 +139,17 @@ public class CompanyController {
         return allowedExtensions.contains(extension);
     }
 
-
     @GetMapping("/export-excel")
     public ResponseEntity<byte[]> exportCompaniesToExcel() throws IOException {
+        log.info("Şirkət siyahısı Excel formatında istənildi ");
+
         byte[] excelData = companyService.exportCompaniesToExcel();
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=companies.xlsx");
 
+        log.info("Excel faylı hazırlandı, {} byte ", excelData.length);
         return new ResponseEntity<>(excelData, headers, HttpStatus.OK);
     }
+
 }
