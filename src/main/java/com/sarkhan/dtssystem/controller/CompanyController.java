@@ -2,6 +2,8 @@ package com.sarkhan.dtssystem.controller;
 
 import com.sarkhan.dtssystem.config.PdfScriptChecker;
 import com.sarkhan.dtssystem.dto.request.CompanyRequest;
+import com.sarkhan.dtssystem.model.company.Company;
+import com.sarkhan.dtssystem.repository.company.CompanyRepository;
 import com.sarkhan.dtssystem.service.CompanyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,9 +31,10 @@ public class CompanyController {
 
     private final CompanyService companyService;
     private final PdfScriptChecker pdfScriptChecker;
+    private final CompanyRepository companyRepository;
+
     @Value("${secret-key}")
     private String secretToken;
-
 
     public boolean verifyRecaptcha(String recaptchaToken) {
         String verifyUrl = "https://www.google.com/recaptcha/api/siteverify";
@@ -152,4 +155,10 @@ public class CompanyController {
         return new ResponseEntity<>(excelData, headers, HttpStatus.OK);
     }
 
+    @GetMapping("/getAll")
+    public List<Company> getAllCompaniesAsJSON(@RequestHeader("Authorization") String token) {
+        log.info("Şirkət siyahısı JSON formatında istənildi ");
+        List<Company> companies = companyRepository.findAll();
+        return companies;
+    }
 }
